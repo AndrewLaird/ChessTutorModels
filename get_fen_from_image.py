@@ -33,7 +33,7 @@ for (dirpath, dirnames, filenames) in os.walk(INPUT_DIR):
     break
 
 # start off by running the crop model on the input images
-detect.detect(INPUT_DIR, CROP_MODEL, CROPPED_DIR)
+crop_data = detect.detect(INPUT_DIR, CROP_MODEL, CROPPED_DIR)
 
 # this puts labels in the crop_dir that we use to actually crop the images
 
@@ -43,11 +43,10 @@ def map_files_to_labels(image):
 
 labels = [map_files_to_labels(file) for file in detected_files]
 
-def crop_image(file,label, output_filename, output_dir):
+def crop_image(file,possible_chessboards, output_filename, output_dir):
     width, height = image.size
     # find the most confident of the chessboards here
     # but for now just get the first one
-    possible_chessboards = [[float(x) for x in list(label[i])[0].split(' ')] for index in label.iterrows()]
     most_confident_chessboard = sorted(possible_chessboards, key=lambda row: row[5])[0]
     class_id, center_x, center_y,  box_width, box_height, confidence = most_confident_chessboard
     pixel_center_x = width*center_x
@@ -71,14 +70,10 @@ def crop_image(file,label, output_filename, output_dir):
 
 for i in range(len(detected_files)):
     image = Image.open(INPUT_DIR + '/' + detected_files[i])
-    if( not os.path.exists(TO_CROP_LABELS_DIR + "/" +labels[i])):
-        continue
-    label = pd.read_csv(TO_CROP_LABELS_DIR + "/" +labels[i], header=None)
-    crop_image(image,label,detected_files[i],CROPPED_DIR)
+    crop_image(image,crop_data[i],detected_files[i],CROPPED_DIR)
 
 # then we run those cropped images through the piece model
-detect.detect(CROPPED_DIR, PIECE_MODEL, OUTPUT_DIR)
-
+detected_pieces = detect.detect(CROPPED_DIR, PIECE_MODEL, OUTPUT_DIR)
 
 
 # this outputs files that we can process into the final chess board!
@@ -113,13 +108,12 @@ def board_to_fen(board):
 
 
 for i in range(len(detected_files)):
-    board_labels = pd.read_csv(OUTPUT_DIR+'/labels/'+labels[i], header=None, sep=' ')
     # intialize the boards all empty
     combined_confidence = 0
     total_number_of_pieces = 0
     board = [[12 for x in range(8)] for y in range(8)]
-    for index, piece in board_labels.iterrows():
-        class_id, center_x, center_y,  box_width, box_height, confidence = [float(x) for x in piece]
+    for piece in detected_pieces[i]:
+        class_id, center_x, center_y,  box_width, box_height, confidence = piece
         if(confidence < .85):
             continue
         combined_confidence += confidence
