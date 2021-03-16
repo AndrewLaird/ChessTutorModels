@@ -35,8 +35,8 @@ def detect(source='data/input_images', weights='cropModel.pt', output='data/crop
     result_data = []
 
     # Directories
-    save_dir = Path(project, exist_ok=True)  # increment run
-    (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    #save_dir = Path(project, exist_ok=True)  # increment run
+    #(save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Initialize
     device = select_device(device)
@@ -82,8 +82,8 @@ def detect(source='data/input_images', weights='cropModel.pt', output='data/crop
             p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
 
             p = Path(p)  # to Path
-            save_path = str(save_dir / p.name)  # img.jpg
-            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
+            #save_path = str(save_dir / p.name)  # img.jpg
+            #txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             if len(det):
@@ -96,16 +96,16 @@ def detect(source='data/input_images', weights='cropModel.pt', output='data/crop
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # clear the file if it exists
-                with open(txt_path + '.txt', 'w') as f:
-                    f.write('')
+                #with open(txt_path + '.txt', 'w') as f:
+                    #f.write('')
                 # Write results
                 result_data.append([])
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
+                        line = (int(cls), *xywh, float(conf)) if save_conf else (cls, *xywh)  # label format
                         result_data[i].append(line)
-                        # no need to write the results to file, we will just return them from this function
+                        #) no need to write the results to file, we will just return them from this function
                         #with open(txt_path + '.txt', 'a') as f:
                            # f.write(('%g ' * len(line)).rstrip() % line + '\n')
 

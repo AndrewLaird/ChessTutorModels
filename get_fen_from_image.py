@@ -67,10 +67,14 @@ def crop_image(file,possible_chessboards, output_filename, output_dir):
 
     #image.show()
     cropped_image.save(output_dir + "/" + output_filename)
+    return list(most_confident_chessboard)
 
+crops =[]
 for i in range(len(detected_files)):
     image = Image.open(INPUT_DIR + '/' + detected_files[i])
-    crop_image(image,crop_data[i],detected_files[i],CROPPED_DIR)
+    chessboard = crop_image(image,crop_data[i],detected_files[i],CROPPED_DIR)
+    crops.append(chessboard)
+
 
 # then we run those cropped images through the piece model
 detected_pieces = detect.detect(CROPPED_DIR, PIECE_MODEL, OUTPUT_DIR)
@@ -104,8 +108,9 @@ def board_to_fen(board):
 
     #who can castle and what was the last move
     fen_str += ' - -'
-    print("FEN:",fen_str)
+    return fen_str
 
+fens = []
 
 for i in range(len(detected_files)):
     # intialize the boards all empty
@@ -122,5 +127,11 @@ for i in range(len(detected_files)):
         y_pos = int(center_y // (.125))
         board[y_pos][x_pos] = class_id
         total_number_of_pieces += 1
-    board_to_fen(board)
+    fens.append(board_to_fen(board))
 
+if(len(fens) == 1):
+    print(0)
+    print(" ".join([str(x) for x in crops[0]]))
+    print(fens[0])
+else:
+    print(1)
