@@ -35,6 +35,9 @@ for (dirpath, dirnames, filenames) in os.walk(INPUT_DIR):
         detected_files.append(new_filename)
     break
 
+if(len(detected_files) == 0):
+    print('1')
+    exit(1);
 
 # start off by running the crop model on the input images
 crop_data = detect.detect(INPUT_DIR, CROP_MODEL, CROPPED_DIR)
@@ -73,7 +76,7 @@ def crop_image(file,possible_chessboards, output_filename, output_dir):
     cropped_image.save(output_dir + "/" + output_filename)
     return list(most_confident_chessboard)
 
-crops =[]
+crops = []
 for i in range(len(detected_files)):
     image = Image.open(INPUT_DIR + '/' + detected_files[i])
     chessboard = crop_image(image,crop_data[i],detected_files[i],CROPPED_DIR)

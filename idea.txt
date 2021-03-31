@@ -1,7 +1,0 @@
-We have to take in a directory of images
-Then run the chess board locating model on them
-crop them if there is an image, drop it if there isnt (also if it isn't roughly a square)
-Drop the cropped images into a new folder
-run the chess piece model on those
-take the chess piece to be what 1/8th of the board it's in
-and then output a FERN for chess.com
