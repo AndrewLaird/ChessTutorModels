@@ -25,7 +25,7 @@ def detect(source='data/input_images', weights='cropModel.pt', output='data/crop
     # defaulted from trainging
     imgsz = 640
     project = output
-    device = ''
+    device = 'cpu'
     conf_thres = 0.25
     iou_thres = 0.45
     save_conf = True
@@ -69,7 +69,7 @@ def detect(source='data/input_images', weights='cropModel.pt', output='data/crop
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
 
-        # Inference
+        # Inferencehttps://towardsdatascience.com/onnx-js-universal-deep-learning-models-in-the-browser-fbd268c67513
         t1 = time_synchronized()
         pred = model(img, augment=False)[0]#opt.augment)[0]
 

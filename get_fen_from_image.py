@@ -28,9 +28,13 @@ detected_files = []
 for (dirpath, dirnames, filenames) in os.walk(INPUT_DIR):
     for i,file in enumerate(filenames):
         new_filename = str(i+1)+'.png'
+        if(file.split(".")[-1] != '.png'):
+            im = Image.open(INPUT_DIR + '/' + file)
+            im.save(INPUT_DIR + '/' + new_filename)
         os.rename(INPUT_DIR+'/'+file, INPUT_DIR + '/' + new_filename)
         detected_files.append(new_filename)
     break
+
 
 # start off by running the crop model on the input images
 crop_data = detect.detect(INPUT_DIR, CROP_MODEL, CROPPED_DIR)
@@ -104,10 +108,10 @@ def board_to_fen(board):
         fen_str += row_str
 
     #who's turn is it
-    fen_str += " w"
+    # fen_str += " w"
 
     #who can castle and what was the last move
-    fen_str += ' - -'
+    # fen_str += ' - -'
     return fen_str
 
 fens = []
