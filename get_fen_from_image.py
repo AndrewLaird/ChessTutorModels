@@ -27,12 +27,15 @@ PIECE_MODEL = PROJECT_DIR + 'pieceModel.pt'
 detected_files = []
 for (dirpath, dirnames, filenames) in os.walk(INPUT_DIR):
     for i,file in enumerate(filenames):
-        new_filename = str(i+1)+'.png'
-        if(file.split(".")[-1] != '.png'):
-            im = Image.open(INPUT_DIR + '/' + file)
-            im.save(INPUT_DIR + '/' + new_filename)
-        os.rename(INPUT_DIR+'/'+file, INPUT_DIR + '/' + new_filename)
-        detected_files.append(new_filename)
+        try:
+            new_filename = str(i+1)+'.png'
+            if(file.split(".")[-1] != '.png'):
+                im = Image.open(INPUT_DIR + '/' + file)
+                im.save(INPUT_DIR + '/' + new_filename)
+            os.rename(INPUT_DIR+'/'+file, INPUT_DIR + '/' + new_filename)
+            detected_files.append(new_filename)
+        except Exception as e:
+            print(e);
     break
 
 if(len(detected_files) == 0):
