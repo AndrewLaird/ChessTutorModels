@@ -53,6 +53,10 @@ def map_files_to_labels(image):
 
 labels = [map_files_to_labels(file) for file in detected_files]
 
+# first time setup
+if(not os.path.exists(CROPPED_DIR)):
+    os.path.makedirs(CROPPED_DIR)
+
 def crop_image(file,possible_chessboards, output_filename, output_dir):
     width, height = image.size
     # find the most confident of the chessboards here
