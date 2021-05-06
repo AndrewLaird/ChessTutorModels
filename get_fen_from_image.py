@@ -27,15 +27,12 @@ PIECE_MODEL = PROJECT_DIR + 'pieceModel.pt'
 detected_files = []
 for (dirpath, dirnames, filenames) in os.walk(INPUT_DIR):
     for i,file in enumerate(filenames):
-        try:
-            new_filename = str(i+1)+'.png'
-            if(file.split(".")[-1] != '.png'):
-                im = Image.open(INPUT_DIR + '/' + file)
-                im.save(INPUT_DIR + '/' + new_filename)
-            os.rename(INPUT_DIR+'/'+file, INPUT_DIR + '/' + new_filename)
-            detected_files.append(new_filename)
-        except Exception as e:
-            print(e);
+        new_filename = str(i+1)+'.png'
+        if(file.split(".")[-1] != '.png'):
+            im = Image.open(INPUT_DIR + '/' + file)
+            im.save(INPUT_DIR + '/' + new_filename)
+        os.rename(INPUT_DIR+'/'+file, INPUT_DIR + '/' + new_filename)
+        detected_files.append(new_filename)
     break
 
 if(len(detected_files) == 0):
@@ -52,10 +49,6 @@ def map_files_to_labels(image):
     return text_path
 
 labels = [map_files_to_labels(file) for file in detected_files]
-
-# first time setup
-if(not os.path.exists(CROPPED_DIR)):
-    os.path.makedirs(CROPPED_DIR)
 
 def crop_image(file,possible_chessboards, output_filename, output_dir):
     width, height = image.size
