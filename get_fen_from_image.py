@@ -12,43 +12,40 @@ import matplotlib.pyplot as plt
 import detect
 import time
 import pathlib
+import sys
 
 PROJECT_DIR = str(pathlib.Path(__file__).parent.absolute()) +'/'
-INPUT_DIR =  PROJECT_DIR + 'data/input_images'
 TO_CROP_LABELS_DIR =  PROJECT_DIR + 'data/cropped/labels'
 CROPPED_DIR  = PROJECT_DIR + 'data/cropped'
-OUTPUT_DIR = 'data/output_fen'
+OUTPUT_DIR = PROJECT_DIR + 'data/output_files'
 
 CROP_MODEL = PROJECT_DIR + 'cropModel.pt'
 PIECE_MODEL = PROJECT_DIR + 'pieceModel.pt'
 
+# get command line arguments
+_, INPUT_DIR, upload_number = sys.argv
+CROPPED_DIR = CROPPED_DIR+'/'+ upload_number
+
+if(not os.path.exists(CROPPED_DIR)):
+    os.mkdir(CROPPED_DIR)
 
 # rename input files to be 1->N
 detected_files = []
 for (dirpath, dirnames, filenames) in os.walk(INPUT_DIR):
     for i,file in enumerate(filenames):
-        new_filename = str(i+1)+'.png'
+        # convert not png to png
         if(file.split(".")[-1] != '.png'):
             im = Image.open(INPUT_DIR + '/' + file)
-            im.save(INPUT_DIR + '/' + new_filename)
-        os.rename(INPUT_DIR+'/'+file, INPUT_DIR + '/' + new_filename)
-        detected_files.append(new_filename)
+            im.save(INPUT_DIR + '/' + file)
+            detected_files.append(file)
+         except Exception as e:
+             print("couldn't open file")
+             print(e);
     break
 
-if(len(detected_files) == 0):
-    print('1')
-    exit(1);
 
 # start off by running the crop model on the input images
 crop_data = detect.detect(INPUT_DIR, CROP_MODEL, CROPPED_DIR)
-
-# this puts labels in the crop_dir that we use to actually crop the images
-
-def map_files_to_labels(image):
-    text_path = image.split('.')[0] + ".txt"
-    return text_path
-
-labels = [map_files_to_labels(file) for file in detected_files]
 
 def crop_image(file,possible_chessboards, output_filename, output_dir):
     width, height = image.size
@@ -137,8 +134,12 @@ for i in range(len(detected_files)):
     fens.append(board_to_fen(board))
 
 if(len(fens) == 1):
-    print(0)
-    print(" ".join([str(x) for x in crops[0]]))
-    print(fens[0])
+    with open(OUTPUT_DIR+"/"+upload_number +".txt", "w+") as f:
+        f.write("0\n")
+        f.write(" ".join([str(x) for x in crops[0]])+"\n")
+        f.write(fens[0]+"\n")
+    exit(0)
 else:
-    print(1)
+    with open(OUTPUT_DIR+"/"+upload_number +".txt", "w+") as f:
+        f.write("1\n")
+    exit(0)
