@@ -34,14 +34,14 @@ detected_files = []
 for (dirpath, dirnames, filenames) in os.walk(INPUT_DIR):
     for i,file in enumerate(filenames):
         # convert not png to png
-        if(file.split(".")[-1] != '.png'):
-            im = Image.open(INPUT_DIR + '/' + file)
-            im.save(INPUT_DIR + '/' + file)
+        try:
+            if(file.split(".")[-1] != '.png'):
+                im = Image.open(INPUT_DIR + '/' + file)
+                im.save(INPUT_DIR + '/' + file)
             detected_files.append(file)
-         except Exception as e:
-             print("couldn't open file")
-             print(e);
-    break
+        except Exception as e:
+            print("couldn't open file")
+            print(e);
 
 
 # start off by running the crop model on the input images
